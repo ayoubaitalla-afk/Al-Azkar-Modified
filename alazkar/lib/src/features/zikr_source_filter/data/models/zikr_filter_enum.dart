@@ -6,6 +6,8 @@ enum ZikrFilter {
 
   sahihMuslim("مسلم", "صحيح مسلم", "Sahih Muslim"),
 
+  muttaqunAlayh("متفق عليه", "متفق عليه", "Muttaqun Alayh"),
+
   abuDawood("داو", "سنن أبي داود", "Sunan Abu Dawood"),
 
   atTirmidhi("ترمذ", "سنن الترمذي", "Sunan AtTirmidhi"),

@@ -30,7 +30,12 @@ extension FilterListExt on List<Filter> {
     for (final e in this) {
       if (!e.isActivated || e.filter.isForHokm) continue;
 
-      isValid = source.contains(e.filter.nameInDatabase);
+      if (e.filter == ZikrFilter.muttaqunAlayh) {
+        isValid = source.contains(ZikrFilter.sahihBukhari.nameInDatabase) &&
+            source.contains(ZikrFilter.sahihMuslim.nameInDatabase);
+      } else {
+        isValid = source.contains(e.filter.nameInDatabase);
+      }
 
       if (isValid) break;
     }
