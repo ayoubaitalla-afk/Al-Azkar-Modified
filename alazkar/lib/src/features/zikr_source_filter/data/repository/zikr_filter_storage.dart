@@ -1,11 +1,11 @@
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:alazkar/src/core/utils/app_print.dart';
 import 'package:alazkar/src/features/home/data/models/titles_freq_enum.dart';
 import 'package:alazkar/src/features/zikr_source_filter/data/models/zikr_filter.dart';
 import 'package:alazkar/src/features/zikr_source_filter/data/models/zikr_filter_enum.dart';
-import 'package:get_storage/get_storage.dart';
 
 class ZikrFilterStorage {
-  final GetStorage box;
+  final KVStorage box;
 
   ZikrFilterStorage(this.box);
 

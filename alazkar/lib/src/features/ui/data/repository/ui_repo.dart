@@ -1,11 +1,11 @@
 import 'dart:convert';
 
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:alazkar/src/core/utils/app_print.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 
 class UIRepo {
-  final GetStorage box;
+  final KVStorage box;
 
   UIRepo(this.box);
 

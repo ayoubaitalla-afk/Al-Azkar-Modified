@@ -1,8 +1,8 @@
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 
 class ShareAsImageRepo {
-  final GetStorage box;
+  final KVStorage box;
 
   ShareAsImageRepo(this.box);
 

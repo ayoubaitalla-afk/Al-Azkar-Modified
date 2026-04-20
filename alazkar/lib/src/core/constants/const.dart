@@ -25,6 +25,7 @@ const Iterable<int> kArabicDiacriticsChar = [
 
 String kGetStorageName =
     PlatformExtension.isDesktop ? "alazkar_storage" : "GetStorage";
+String kHiveBoxName = "alazkar_box";
 
 const double kFontChangeBy = 2;
 const double kFontDefault = 30;

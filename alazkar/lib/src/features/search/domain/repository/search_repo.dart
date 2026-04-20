@@ -1,9 +1,9 @@
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:alazkar/src/features/search/data/models/search_for.dart';
 import 'package:alazkar/src/features/search/data/models/search_type.dart';
-import 'package:get_storage/get_storage.dart';
 
 class SearchRepo {
-  final GetStorage box;
+  final KVStorage box;
 
   SearchRepo(this.box);
 

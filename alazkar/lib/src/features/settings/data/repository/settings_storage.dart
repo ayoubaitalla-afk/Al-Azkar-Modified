@@ -1,7 +1,7 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 
 class SettingsStorage {
-  final GetStorage _box;
+  final KVStorage _box;
   SettingsStorage(this._box);
 
   static const String _settingsPrefixNameKey = "SettingsStorage";

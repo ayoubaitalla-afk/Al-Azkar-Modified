@@ -1,8 +1,8 @@
 import 'package:alazkar/src/core/constants/const.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 
 class ZikrTextRepo {
-  final GetStorage box;
+  final KVStorage box;
   ZikrTextRepo(this.box);
 
   ///MARK: Font

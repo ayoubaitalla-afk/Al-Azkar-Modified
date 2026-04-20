@@ -2,6 +2,8 @@ import 'package:alazkar/src/core/constants/const.dart';
 import 'package:alazkar/src/core/helpers/azkar_helper.dart';
 import 'package:alazkar/src/core/helpers/bookmarks_helper.dart';
 import 'package:alazkar/src/core/manager/volume_button_manager.dart';
+import 'package:alazkar/src/core/storage/hive_kv_storage.dart';
+import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:alazkar/src/features/home/presentation/controller/home/home_bloc.dart';
 import 'package:alazkar/src/features/quran/data/repository/uthmani_repository.dart';
 import 'package:alazkar/src/features/search/domain/repository/search_repo.dart';
@@ -19,13 +21,15 @@ import 'package:alazkar/src/features/zikr_content_viewer/presentation/controller
 import 'package:alazkar/src/features/zikr_source_filter/data/repository/zikr_filter_storage.dart';
 import 'package:alazkar/src/features/zikr_source_filter/presentation/controller/cubit/zikr_source_filter_cubit.dart';
 import 'package:get_it/get_it.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:hive_ce/hive.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initSL() async {
   ///MARK: Init storages
-  sl.registerLazySingleton(() => GetStorage(kGetStorageName));
+  sl.registerLazySingleton<KVStorage>(
+    () => HiveKVStorage(Hive.box(kHiveBoxName)),
+  );
   sl.registerLazySingleton(() => UIRepo(sl()));
   sl.registerLazySingleton(() => ThemeStorage(sl()));
   sl.registerLazySingleton(() => ZikrFilterStorage(sl()));
