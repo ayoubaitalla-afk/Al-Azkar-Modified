@@ -1,6 +1,9 @@
+import 'package:alazkar/src/core/di/dependency_injection.dart';
+import 'package:alazkar/src/core/helpers/notification_helper.dart';
 import 'package:alazkar/src/features/settings/data/repository/settings_storage.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart' as material;
 
 part 'settings_state.dart';
 
@@ -11,6 +14,9 @@ class SettingsCubit extends Cubit<SettingsState> {
           SettingsState(
             showTextInBrackets: settingsStorage.showTextInBrackets(),
             praiseWithVolumeKeys: settingsStorage.praiseWithVolumeKeys,
+            dailyNotificationsEnabled: settingsStorage.dailyNotificationsEnabled,
+            dailyNotificationsHour: settingsStorage.dailyNotificationsHour,
+            dailyNotificationsMinute: settingsStorage.dailyNotificationsMinute,
           ),
         );
 
@@ -24,5 +30,35 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future togglePraiseWithVolumeKeys({required bool use}) async {
     await settingsStorage.changePraiseWithVolumeKeysStatus(value: use);
     emit(state.copyWith(praiseWithVolumeKeys: use));
+  }
+
+  ///MARK: dailyNotifications
+  Future toggleDailyNotifications(bool value) async {
+    await settingsStorage.setDailyNotificationsEnabled(value);
+    emit(state.copyWith(dailyNotificationsEnabled: value));
+    await _updateNotificationSchedule();
+  }
+
+  Future setDailyNotificationsTime(int hour, int minute) async {
+    await settingsStorage.setDailyNotificationsTime(hour, minute);
+    emit(state.copyWith(
+      dailyNotificationsHour: hour,
+      dailyNotificationsMinute: minute,
+    ));
+    await _updateNotificationSchedule();
+  }
+
+  Future<void> _updateNotificationSchedule() async {
+    final notificationHelper = sl<NotificationHelper>();
+    if (state.dailyNotificationsEnabled) {
+      await notificationHelper.scheduleDailyFavoriteAzkar(
+        time: material.TimeOfDay(
+          hour: state.dailyNotificationsHour,
+          minute: state.dailyNotificationsMinute,
+        ),
+      );
+    } else {
+      await notificationHelper.cancelAllNotifications();
+    }
   }
 }

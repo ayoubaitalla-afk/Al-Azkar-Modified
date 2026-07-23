@@ -5,6 +5,7 @@ import 'package:alazkar/src/core/di/dependency_injection.dart';
 import 'package:alazkar/src/core/extension/extension_platform.dart';
 import 'package:alazkar/src/core/helpers/azkar_helper.dart';
 import 'package:alazkar/src/core/helpers/bookmarks_helper.dart';
+import 'package:alazkar/src/core/helpers/notification_helper.dart';
 import 'package:alazkar/src/core/storage/kv_storage.dart';
 import 'package:alazkar/src/core/storage/storage_migration_service.dart';
 import 'package:alazkar/src/core/utils/app_bloc_observer.dart';
@@ -97,6 +98,7 @@ Future initDBs() async {
       sl<AzkarDBHelper>().init(),
       sl<UthmaniRepository>().init(),
       sl<BookmarksDBHelper>().init(),
+      sl<NotificationHelper>().init(),
     ]);
   } catch (e) {
     showToast(e.toString());

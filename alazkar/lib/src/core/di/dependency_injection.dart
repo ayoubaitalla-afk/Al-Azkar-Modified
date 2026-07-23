@@ -1,6 +1,7 @@
 import 'package:alazkar/src/core/constants/const.dart';
 import 'package:alazkar/src/core/helpers/azkar_helper.dart';
 import 'package:alazkar/src/core/helpers/bookmarks_helper.dart';
+import 'package:alazkar/src/core/helpers/notification_helper.dart';
 import 'package:alazkar/src/core/manager/volume_button_manager.dart';
 import 'package:alazkar/src/core/storage/hive_kv_storage.dart';
 import 'package:alazkar/src/core/storage/kv_storage.dart';
@@ -43,6 +44,7 @@ Future<void> initSL() async {
   sl.registerLazySingleton(() => UthmaniRepository());
   sl.registerLazySingleton(() => BookmarksDBHelper());
   sl.registerLazySingleton(() => AzkarDBHelper());
+  sl.registerLazySingleton(() => NotificationHelper());
 
   ///MARK: Init Manager
   sl.registerFactory(() => VolumeButtonManager());

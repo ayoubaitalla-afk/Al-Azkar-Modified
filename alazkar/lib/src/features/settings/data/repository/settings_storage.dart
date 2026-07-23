@@ -25,4 +25,19 @@ class SettingsStorage {
   bool get praiseWithVolumeKeys => _box.read(praiseWithVolumeKeysKey) ?? true;
   Future<void> changePraiseWithVolumeKeysStatus({required bool value}) =>
       _box.write(praiseWithVolumeKeysKey, value);
+
+  ///MARK: dailyNotifications
+  static const String _dailyNotificationsEnabledKey = "dailyNotificationsEnabled";
+  static const String _dailyNotificationsHourKey = "dailyNotificationsHour";
+  static const String _dailyNotificationsMinuteKey = "dailyNotificationsMinute";
+
+  bool get dailyNotificationsEnabled => _box.read(_dailyNotificationsEnabledKey) ?? false;
+  int get dailyNotificationsHour => _box.read(_dailyNotificationsHourKey) ?? 8;
+  int get dailyNotificationsMinute => _box.read(_dailyNotificationsMinuteKey) ?? 0;
+
+  Future setDailyNotificationsEnabled(bool value) => _box.write(_dailyNotificationsEnabledKey, value);
+  Future setDailyNotificationsTime(int hour, int minute) async {
+    await _box.write(_dailyNotificationsHourKey, hour);
+    await _box.write(_dailyNotificationsMinuteKey, minute);
+  }
 }
