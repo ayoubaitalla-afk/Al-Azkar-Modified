@@ -40,6 +40,7 @@ dependencies:
   path_provider: ^2.1.5
   shake: ^3.0.0
   share_plus: ^12.0.1
+  permission_handler: ^11.3.1
   sqflite: ^2.4.2
   flutter_local_notifications: ^17.2.2
   timezone: ^0.9.4

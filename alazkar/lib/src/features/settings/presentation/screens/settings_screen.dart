@@ -9,6 +9,9 @@ import 'package:alazkar/src/features/theme/presentation/screens/theme_screen.dar
 import 'package:alazkar/src/features/zikr_source_filter/presentation/screens/select_zikr_hokm_screen.dart';
 import 'package:alazkar/src/features/zikr_source_filter/presentation/screens/select_zikr_source_screen.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:alazkar/src/core/di/dependency_injection.dart';
+import 'package:alazkar/src/core/helpers/notification_helper.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -41,6 +44,15 @@ class SettingsScreen extends StatelessWidget {
           const PraiseWithVolumeSwitch(),
           const DailyNotificationsSwitch(),
           const HistoricalNotificationsSwitch(),
+          if (Platform.isAndroid)
+            ListTile(
+              leading: const Icon(Icons.battery_saver),
+              title: const Text("تحسين البطارية (شاومي)"),
+              subtitle: const Text("عطل تحسين البطارية لضمان وصول الإشعارات"),
+              onTap: () async {
+                await sl<NotificationHelper>().openBatteryOptimizationSettings();
+              },
+            ),
           const Divider(),
           const SettingsGroupTitle(title: "تصفية الأذكار"),
           const ShowOnlyWithFadlSwitch(),

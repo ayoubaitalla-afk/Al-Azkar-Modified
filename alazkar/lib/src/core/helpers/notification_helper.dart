@@ -7,6 +7,8 @@ import 'package:alazkar/src/core/helpers/azkar_helper.dart';
 import 'package:alazkar/src/core/di/dependency_injection.dart';
 import 'package:alazkar/src/features/settings/data/repository/settings_storage.dart';
 import 'dart:math';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 class NotificationHelper {
   static final NotificationHelper _instance = NotificationHelper._internal();
@@ -37,6 +39,34 @@ class NotificationHelper {
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
     );
+
+    // طلب أذونات الإشعارات والمنبهات الدقيقة (خاصة لأندرويد 13+ وشاومي)
+    await requestPermissions();
+  }
+
+  Future<void> requestPermissions() async {
+    if (Platform.isAndroid) {
+      // 1. طلب إذن الإشعارات (أندرويد 13+)
+      if (await Permission.notification.isDenied) {
+        await Permission.notification.request();
+      }
+
+      // 2. التحقق من إذن المنبهات الدقيقة (أندرويد 12+)
+      // هذا ضروري لضمان عمل الأذكار في وقتها تماماً
+      final status = await Permission.scheduleExactAlarm.status;
+      if (status.isDenied) {
+        await Permission.scheduleExactAlarm.request();
+      }
+    } else if (Platform.isIOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+    }
   }
 
   /// إعادة جدولة جميع الإشعارات (العامة والمخصصة)
@@ -143,6 +173,13 @@ class NotificationHelper {
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: match,
     );
+  }
+
+  // دالة لفتح إعدادات تحسين البطارية لشاومي
+  Future<void> openBatteryOptimizationSettings() async {
+    if (Platform.isAndroid) {
+      await Permission.ignoreBatteryOptimizations.request();
+    }
   }
 
   Future<void> _scheduleSingleZikr(int notificationId, int titleId, material.TimeOfDay time, String channelName) async {
