@@ -14,6 +14,7 @@ workflows:
       - name: Build Android APK
         script: |
           cd alazkar
-          flutter build apk --debug --android-skip-build-dependency-validation
+          flutter build apk --debug --flavor dev --android-skip-build-dependency-validation
     artifacts:
-      - alazkar/build/app/outputs/flutter-apk/*.apk
+      - alazkar/build/app/outputs/flutter-apk/**/*.apk
+      - alazkar/build/app/outputs/apk/**/*.apk
