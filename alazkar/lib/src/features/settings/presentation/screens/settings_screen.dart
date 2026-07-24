@@ -43,7 +43,6 @@ class SettingsScreen extends StatelessWidget {
           const ShowTextInBracketsSwitch(),
           const PraiseWithVolumeSwitch(),
           const DailyNotificationsSwitch(),
-          const HistoricalNotificationsSwitch(),
           if (Platform.isAndroid)
             ListTile(
               leading: const Icon(Icons.battery_saver),
