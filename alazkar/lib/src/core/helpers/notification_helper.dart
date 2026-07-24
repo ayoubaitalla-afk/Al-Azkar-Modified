@@ -131,8 +131,10 @@ class NotificationHelper {
     if (zikrContent.isNotEmpty) {
       final firstZikr = zikrContent.first;
       body = firstZikr.body ?? body;
-      if (body.length > 100) {
-        body = "${body.substring(0, 97)}...";
+      // HyperOS may silently drop notifications with very long bodies.
+      // Truncate aggressively to 60 characters to be absolutely safe.
+      if (body.length > 60) {
+        body = "${body.substring(0, 57)}...";
       }
     }
 
@@ -164,6 +166,7 @@ class NotificationHelper {
         ),
         iOS: const DarwinNotificationDetails(),
       ),
+      // Using exactAllowWhileIdle is crucial for HyperOS to wake up the device
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
