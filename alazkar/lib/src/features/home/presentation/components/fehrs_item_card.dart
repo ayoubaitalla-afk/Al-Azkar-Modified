@@ -1,5 +1,6 @@
 import 'package:alazkar/src/core/models/zikr_title.dart';
 import 'package:alazkar/src/features/home/presentation/components/bookmark_title_button.dart';
+import 'package:alazkar/src/features/home/presentation/components/favorite_time_button.dart';
 import 'package:alazkar/src/features/zikr_content_viewer/presentation/screens/zikr_content_viewer_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +27,7 @@ class FehrsItemCard extends StatelessWidget {
             ),
           ),
           BookmarkTitleButton(titleId: zikrTitle.id),
+          FavoriteTimeButton(titleId: zikrTitle.id),
         ],
       ),
       title: Text(zikrTitle.name),

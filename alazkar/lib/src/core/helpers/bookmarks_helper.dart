@@ -10,7 +10,7 @@ class BookmarksDBHelper {
   /* ************* Variables ************* */
 
   static const String dbName = "Bookmarks.db";
-  static const int dbVersion = 2;
+  static const int dbVersion = 3;
 
   /* ************* Singleton Constructor ************* */
 
@@ -74,6 +74,7 @@ class BookmarksDBHelper {
     CREATE TABLE "favourite_titles" (
       "id"	INTEGER NOT NULL UNIQUE,
       "titleId"	INTEGER NOT NULL UNIQUE,
+      "notification_time" TEXT,
       PRIMARY KEY("id" AUTOINCREMENT)
     );
     ''');
@@ -105,6 +106,11 @@ class BookmarksDBHelper {
     if (oldVersion < 2) {
       await addDefaultTitles(db);
     }
+    if (oldVersion < 3) {
+      await db.execute(
+        'ALTER TABLE favourite_titles ADD COLUMN notification_time TEXT',
+      );
+    }
   }
 
   /// On downgrade database version
@@ -116,16 +122,34 @@ class BookmarksDBHelper {
 
   /* ************* Functions ************* */
 
+  Future<List<Map<String, dynamic>>> getAllFavoriteTitlesWithTime() async {
+    final Database db = await database;
+    return await db.rawQuery(
+      '''SELECT * from favourite_titles order by titleId asc''',
+    );
+  }
+
   Future<List<int>> getAllFavoriteTitles() async {
     final Database db = await database;
 
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-      '''SELECT * from favourite_titles order by titleId asc''',
+      '''SELECT titleId from favourite_titles order by titleId asc''',
     );
 
     return List.generate(maps.length, (i) {
       return maps[i]["titleId"] as int;
     });
+  }
+
+  Future<void> updateNotificationTime({
+    required int titleId,
+    required String? time,
+  }) async {
+    final db = await database;
+    await db.rawUpdate(
+      'UPDATE favourite_titles SET notification_time = ? WHERE titleId = ?',
+      [time, titleId],
+    );
   }
 
   /// Add title to favourite

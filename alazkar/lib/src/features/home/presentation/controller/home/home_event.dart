@@ -55,3 +55,13 @@ class HomeFiltersChange extends HomeEvent {
   @override
   List<Object> get props => [filters];
 }
+
+class HomeUpdateFavoriteTimeEvent extends HomeEvent {
+  final int titleId;
+  final String? time;
+
+  const HomeUpdateFavoriteTimeEvent({required this.titleId, this.time});
+
+  @override
+  List<Object> get props => [titleId, time ?? ""];
+}

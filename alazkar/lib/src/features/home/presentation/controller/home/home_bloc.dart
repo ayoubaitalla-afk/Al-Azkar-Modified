@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:alazkar/src/core/helpers/azkar_helper.dart';
 import 'package:alazkar/src/core/helpers/bookmarks_helper.dart';
+import 'package:alazkar/src/core/helpers/notification_helper.dart';
+import 'package:alazkar/src/core/di/dependency_injection.dart';
 import 'package:alazkar/src/core/models/zikr_title.dart';
 import 'package:alazkar/src/core/utils/app_print.dart';
 import 'package:alazkar/src/features/home/data/models/titles_freq_enum.dart';
@@ -39,6 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeBookmarksChangedEvent>(_bookmarksChanged);
     on<HomeToggleFilterEvent>(_toggleFreqFilter);
     on<HomeFiltersChange>(_handleSettingsFiltersChanges);
+    on<HomeUpdateFavoriteTimeEvent>(_updateFavoriteTime);
   }
 
   Future<void> _start(
@@ -159,6 +162,28 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(
       state.copyWith(favouriteTitlesIds: favouriteTitlesIds),
     );
+
+    // إعادة جدولة الإشعارات عند تغيير المفضلات
+    await getIt<NotificationHelper>().rescheduleDailyFavoriteAzkar();
+  }
+
+  Future<void> _updateFavoriteTime(
+    HomeUpdateFavoriteTimeEvent event,
+    Emitter<HomeState> emit,
+  ) async {
+    final state = this.state;
+    if (state is! HomeLoadedState) return;
+
+    await bookmarksDBHelper.updateNotificationTime(
+      titleId: event.titleId,
+      time: event.time,
+    );
+
+    // إعادة جدولة الإشعارات لتشمل الوقت الجديد
+    await getIt<NotificationHelper>().rescheduleDailyFavoriteAzkar();
+    
+    // تحديث الواجهة إذا لزم الأمر (حالياً الواجهة تعتمد على favouriteTitlesIds فقط)
+    add(HomeBookmarksChangedEvent());
   }
 
   Future<void> _toggleFreqFilter(
