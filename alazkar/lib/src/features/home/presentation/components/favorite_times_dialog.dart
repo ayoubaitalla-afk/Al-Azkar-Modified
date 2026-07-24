@@ -37,6 +37,7 @@ class _FavoriteTimesDialogState extends State<FavoriteTimesDialog> {
           times.add(timeStr);
           times.sort();
         });
+        _triggerAutoSave();
       }
     }
   }
@@ -45,16 +46,16 @@ class _FavoriteTimesDialogState extends State<FavoriteTimesDialog> {
     setState(() {
       times.removeAt(index);
     });
+    _triggerAutoSave();
   }
 
-  void _saveChanges() {
+  void _triggerAutoSave() {
     context.read<HomeBloc>().add(
       HomeUpdateFavoriteTimesEvent(
         titleId: widget.titleId,
         times: times,
       ),
     );
-    Navigator.pop(context);
   }
 
   @override
@@ -97,11 +98,7 @@ class _FavoriteTimesDialogState extends State<FavoriteTimesDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("إلغاء"),
-        ),
-        ElevatedButton(
-          onPressed: _saveChanges,
-          child: const Text("حفظ"),
+          child: const Text("إغلاق"),
         ),
       ],
     );
