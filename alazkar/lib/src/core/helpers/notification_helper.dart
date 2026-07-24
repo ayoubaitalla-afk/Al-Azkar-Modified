@@ -187,7 +187,9 @@ class NotificationHelper {
   // دالة لفتح إعدادات تحسين البطارية لشاومي
   Future<void> openBatteryOptimizationSettings() async {
     if (Platform.isAndroid) {
-      await Permission.ignoreBatteryOptimizations.request();
+      if (await Permission.ignoreBatteryOptimizations.isDenied) {
+        await Permission.ignoreBatteryOptimizations.request();
+      }
     }
   }
 
