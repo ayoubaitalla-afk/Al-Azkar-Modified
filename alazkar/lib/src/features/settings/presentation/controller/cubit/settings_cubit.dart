@@ -17,6 +17,9 @@ class SettingsCubit extends Cubit<SettingsState> {
             dailyNotificationsEnabled: settingsStorage.dailyNotificationsEnabled,
             dailyNotificationsHour: settingsStorage.dailyNotificationsHour,
             dailyNotificationsMinute: settingsStorage.dailyNotificationsMinute,
+            weeklyNotificationsEnabled: settingsStorage.weeklyNotificationsEnabled,
+            monthlyNotificationsEnabled: settingsStorage.monthlyNotificationsEnabled,
+            yearlyNotificationsEnabled: settingsStorage.yearlyNotificationsEnabled,
           ),
         );
 
@@ -45,6 +48,24 @@ class SettingsCubit extends Cubit<SettingsState> {
       dailyNotificationsHour: hour,
       dailyNotificationsMinute: minute,
     ));
+    await _updateNotificationSchedule();
+  }
+
+  Future toggleWeeklyNotifications(bool value) async {
+    await settingsStorage.setWeeklyNotificationsEnabled(value);
+    emit(state.copyWith(weeklyNotificationsEnabled: value));
+    await _updateNotificationSchedule();
+  }
+
+  Future toggleMonthlyNotifications(bool value) async {
+    await settingsStorage.setMonthlyNotificationsEnabled(value);
+    emit(state.copyWith(monthlyNotificationsEnabled: value));
+    await _updateNotificationSchedule();
+  }
+
+  Future toggleYearlyNotifications(bool value) async {
+    await settingsStorage.setYearlyNotificationsEnabled(value);
+    emit(state.copyWith(yearlyNotificationsEnabled: value));
     await _updateNotificationSchedule();
   }
 

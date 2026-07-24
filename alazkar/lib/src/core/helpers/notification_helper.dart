@@ -62,24 +62,87 @@ class NotificationHelper {
       }
     }
 
-    // 2. جدولة الإشعارات المخصصة لكل ذكر
+    // 2. جدولة الإشعارات المخصصة لكل ذكر (أوقات متعددة)
     final favoritesWithTime = await bookmarksHelper.getAllFavoriteTitlesWithTime();
     for (var fav in favoritesWithTime) {
       final titleId = fav['titleId'] as int;
-      final timeStr = fav['notification_time'] as String?;
+      final times = await bookmarksHelper.getNotificationTimes(titleId);
       
-      if (timeStr != null && timeStr.isNotEmpty) {
-        final parts = timeStr.split(':');
+      for (int i = 0; i < times.length; i++) {
+        final parts = times[i].split(':');
         final time = material.TimeOfDay(
           hour: int.parse(parts[0]),
           minute: int.parse(parts[1]),
         );
         
-        // نستخدم titleId كـ ID للإشعار ليكون فريداً لكل ذكر
-        // نضيف 1000 لتجنب التعارض مع الـ ID العام (0)
-        await _scheduleSingleZikr(titleId + 1000, titleId, time, "موعد ذكرك المفضل");
+        // نستخدم titleId و index كـ ID للإشعار
+        // نضيف 1000 + (index * 10000) لضمان عدم التعارض
+        await _scheduleSingleZikr(titleId + 1000 + (i * 10000), titleId, time, "موعد ذكرك المفضل");
       }
     }
+
+    // 3. جدولة الإشعارات التاريخية
+    await _scheduleHistoricalNotifications();
+  }
+
+  Future<void> _scheduleHistoricalNotifications() async {
+    final settingsStorage = sl<SettingsStorage>();
+    final azkarHelper = sl<AzkarDBHelper>();
+    final allTitles = await azkarHelper.getAllTitles();
+
+    // أسبوعي
+    if (settingsStorage.weeklyNotificationsEnabled) {
+      final weeklyTitles = allTitles.where((t) => t.freq.contains('w')).toList();
+      if (weeklyTitles.isNotEmpty) {
+        final randomZikr = weeklyTitles[Random().nextInt(weeklyTitles.length)];
+        await _schedulePeriodicZikr(200000, randomZikr.id, DateTimeComponents.dayOfWeekAndTime, "تذكير أسبوعي");
+      }
+    }
+
+    // شهري
+    if (settingsStorage.monthlyNotificationsEnabled) {
+      final monthlyTitles = allTitles.where((t) => t.freq.contains('m')).toList();
+      if (monthlyTitles.isNotEmpty) {
+        final randomZikr = monthlyTitles[Random().nextInt(monthlyTitles.length)];
+        await _schedulePeriodicZikr(300000, randomZikr.id, DateTimeComponents.dayOfMonthAndTime, "تذكير شهري");
+      }
+    }
+
+    // سنوي
+    if (settingsStorage.yearlyNotificationsEnabled) {
+      final yearlyTitles = allTitles.where((t) => t.freq.contains('y')).toList();
+      if (yearlyTitles.isNotEmpty) {
+        final randomZikr = yearlyTitles[Random().nextInt(yearlyTitles.length)];
+        await _schedulePeriodicZikr(400000, randomZikr.id, DateTimeComponents.dateAndTime, "تذكير سنوي");
+      }
+    }
+  }
+
+  Future<void> _schedulePeriodicZikr(int notificationId, int titleId, DateTimeComponents match, String channelName) async {
+    final azkarHelper = sl<AzkarDBHelper>();
+    final zikrTitle = await azkarHelper.getTitlesById(titleId);
+    
+    // وقت افتراضي للإشعارات الدورية (مثلاً 10 صباحاً)
+    final time = material.TimeOfDay(hour: 10, minute: 0);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      zikrTitle.name,
+      "لا تنسَ قراءة ${zikrTitle.name} (تذكير دوري)",
+      _nextInstance(time),
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'periodic_azkar_channel_$notificationId',
+          channelName,
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: match,
+    );
   }
 
   Future<void> _scheduleSingleZikr(int notificationId, int titleId, material.TimeOfDay time, String channelName) async {

@@ -10,7 +10,7 @@ class BookmarksDBHelper {
   /* ************* Variables ************* */
 
   static const String dbName = "Bookmarks.db";
-  static const int dbVersion = 3;
+  static const int dbVersion = 4;
 
   /* ************* Singleton Constructor ************* */
 
@@ -74,7 +74,7 @@ class BookmarksDBHelper {
     CREATE TABLE "favourite_titles" (
       "id"	INTEGER NOT NULL UNIQUE,
       "titleId"	INTEGER NOT NULL UNIQUE,
-      "notification_time" TEXT,
+      "notification_times" TEXT, -- JSON array of times e.g. ["08:00", "14:00"]
       PRIMARY KEY("id" AUTOINCREMENT)
     );
     ''');
@@ -111,6 +111,24 @@ class BookmarksDBHelper {
         'ALTER TABLE favourite_titles ADD COLUMN notification_time TEXT',
       );
     }
+    if (oldVersion < 4) {
+      // Migrate notification_time to notification_times
+      await db.execute(
+        'ALTER TABLE favourite_titles ADD COLUMN notification_times TEXT',
+      );
+      final List<Map<String, dynamic>> favs = await db.query('favourite_titles');
+      for (var fav in favs) {
+        final time = fav['notification_time'] as String?;
+        if (time != null && time.isNotEmpty) {
+          await db.update(
+            'favourite_titles',
+            {'notification_times': '["$time"]'},
+            where: 'id = ?',
+            whereArgs: [fav['id']],
+          );
+        }
+      }
+    }
   }
 
   /// On downgrade database version
@@ -141,15 +159,40 @@ class BookmarksDBHelper {
     });
   }
 
-  Future<void> updateNotificationTime({
+  Future<void> updateNotificationTimes({
     required int titleId,
-    required String? time,
+    required List<String> times,
   }) async {
     final db = await database;
+    final String timesJson = times.isEmpty ? "" : '["${times.join('","')}"]';
     await db.rawUpdate(
-      'UPDATE favourite_titles SET notification_time = ? WHERE titleId = ?',
-      [time, titleId],
+      'UPDATE favourite_titles SET notification_times = ? WHERE titleId = ?',
+      [timesJson, titleId],
     );
+  }
+
+  Future<List<String>> getNotificationTimes(int titleId) async {
+    final db = await database;
+    final List<Map<String, dynamic>> result = await db.query(
+      'favourite_titles',
+      columns: ['notification_times'],
+      where: 'titleId = ?',
+      whereArgs: [titleId],
+    );
+    if (result.isNotEmpty) {
+      final String? timesJson = result.first['notification_times'] as String?;
+      if (timesJson != null && timesJson.isNotEmpty) {
+        // Simple manual parsing since it's a basic JSON array
+        return timesJson
+            .replaceAll('[', '')
+            .replaceAll(']', '')
+            .replaceAll('"', '')
+            .split(',')
+            .where((s) => s.isNotEmpty)
+            .toList();
+      }
+    }
+    return [];
   }
 
   /// Add title to favourite

@@ -1,3 +1,6 @@
+import 'package:alazkar/src/core/di/dependency_injection.dart';
+import 'package:alazkar/src/core/helpers/bookmarks_helper.dart';
+import 'package:alazkar/src/features/home/presentation/components/favorite_times_dialog.dart';
 import 'package:alazkar/src/features/home/presentation/controller/home/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,18 +24,17 @@ class FavoriteTimeButton extends StatelessWidget {
 
         return IconButton(
           icon: const Icon(Icons.access_time_filled, size: 20),
-          tooltip: "تحديد وقت التنبيه",
+          tooltip: "تحديد أوقات التنبيهات",
           onPressed: () async {
-            final TimeOfDay? picked = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay.now(),
-            );
-            if (picked != null && context.mounted) {
-              // هنا سنضيف حدثاً جديداً في الـ Bloc لتحديث الوقت
-              context.read<HomeBloc>().add(HomeUpdateFavoriteTimeEvent(
-                titleId: titleId,
-                time: "${picked.hour}:${picked.minute}",
-              ));
+            final times = await sl<BookmarksDBHelper>().getNotificationTimes(titleId);
+            if (context.mounted) {
+              showDialog(
+                context: context,
+                builder: (context) => FavoriteTimesDialog(
+                  titleId: titleId,
+                  initialTimes: times,
+                ),
+              );
             }
           },
         );

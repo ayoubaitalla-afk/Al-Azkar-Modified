@@ -40,4 +40,17 @@ class SettingsStorage {
     await _box.write(_dailyNotificationsHourKey, hour);
     await _box.write(_dailyNotificationsMinuteKey, minute);
   }
+
+  ///MARK: historicalNotifications
+  static const String _weeklyNotificationsEnabledKey = "weeklyNotificationsEnabled";
+  static const String _monthlyNotificationsEnabledKey = "monthlyNotificationsEnabled";
+  static const String _yearlyNotificationsEnabledKey = "yearlyNotificationsEnabled";
+
+  bool get weeklyNotificationsEnabled => _box.read(_weeklyNotificationsEnabledKey) ?? false;
+  bool get monthlyNotificationsEnabled => _box.read(_monthlyNotificationsEnabledKey) ?? false;
+  bool get yearlyNotificationsEnabled => _box.read(_yearlyNotificationsEnabledKey) ?? false;
+
+  Future setWeeklyNotificationsEnabled(bool value) => _box.write(_weeklyNotificationsEnabledKey, value);
+  Future setMonthlyNotificationsEnabled(bool value) => _box.write(_monthlyNotificationsEnabledKey, value);
+  Future setYearlyNotificationsEnabled(bool value) => _box.write(_yearlyNotificationsEnabledKey, value);
 }

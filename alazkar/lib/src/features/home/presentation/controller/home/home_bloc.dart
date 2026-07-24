@@ -41,7 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeBookmarksChangedEvent>(_bookmarksChanged);
     on<HomeToggleFilterEvent>(_toggleFreqFilter);
     on<HomeFiltersChange>(_handleSettingsFiltersChanges);
-    on<HomeUpdateFavoriteTimeEvent>(_updateFavoriteTime);
+    on<HomeUpdateFavoriteTimesEvent>(_updateFavoriteTimes);
   }
 
   Future<void> _start(
@@ -167,22 +167,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     await sl<NotificationHelper>().rescheduleDailyFavoriteAzkar();
   }
 
-  Future<void> _updateFavoriteTime(
-    HomeUpdateFavoriteTimeEvent event,
+  Future<void> _updateFavoriteTimes(
+    HomeUpdateFavoriteTimesEvent event,
     Emitter<HomeState> emit,
   ) async {
     final state = this.state;
     if (state is! HomeLoadedState) return;
 
-    await bookmarksDBHelper.updateNotificationTime(
+    await bookmarksDBHelper.updateNotificationTimes(
       titleId: event.titleId,
-      time: event.time,
+      times: event.times,
     );
 
-    // إعادة جدولة الإشعارات لتشمل الوقت الجديد
+    // إعادة جدولة الإشعارات لتشمل الأوقات الجديدة
     await sl<NotificationHelper>().rescheduleDailyFavoriteAzkar();
     
-    // تحديث الواجهة إذا لزم الأمر (حالياً الواجهة تعتمد على favouriteTitlesIds فقط)
+    // تحديث الواجهة
     add(HomeBookmarksChangedEvent());
   }
 

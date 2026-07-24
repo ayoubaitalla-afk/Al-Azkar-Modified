@@ -7,12 +7,19 @@ class SettingsState extends Equatable {
   final bool dailyNotificationsEnabled;
   final int dailyNotificationsHour;
   final int dailyNotificationsMinute;
+  final bool weeklyNotificationsEnabled;
+  final bool monthlyNotificationsEnabled;
+  final bool yearlyNotificationsEnabled;
+
   const SettingsState({
     required this.showTextInBrackets,
     required this.praiseWithVolumeKeys,
     required this.dailyNotificationsEnabled,
     required this.dailyNotificationsHour,
     required this.dailyNotificationsMinute,
+    required this.weeklyNotificationsEnabled,
+    required this.monthlyNotificationsEnabled,
+    required this.yearlyNotificationsEnabled,
   });
 
   @override
@@ -22,6 +29,9 @@ class SettingsState extends Equatable {
         dailyNotificationsEnabled,
         dailyNotificationsHour,
         dailyNotificationsMinute,
+        weeklyNotificationsEnabled,
+        monthlyNotificationsEnabled,
+        yearlyNotificationsEnabled,
       ];
 
   SettingsState copyWith({
@@ -30,6 +40,9 @@ class SettingsState extends Equatable {
     bool? dailyNotificationsEnabled,
     int? dailyNotificationsHour,
     int? dailyNotificationsMinute,
+    bool? weeklyNotificationsEnabled,
+    bool? monthlyNotificationsEnabled,
+    bool? yearlyNotificationsEnabled,
   }) {
     return SettingsState(
       showTextInBrackets: showTextInBrackets ?? this.showTextInBrackets,
@@ -40,6 +53,12 @@ class SettingsState extends Equatable {
           dailyNotificationsHour ?? this.dailyNotificationsHour,
       dailyNotificationsMinute:
           dailyNotificationsMinute ?? this.dailyNotificationsMinute,
+      weeklyNotificationsEnabled:
+          weeklyNotificationsEnabled ?? this.weeklyNotificationsEnabled,
+      monthlyNotificationsEnabled:
+          monthlyNotificationsEnabled ?? this.monthlyNotificationsEnabled,
+      yearlyNotificationsEnabled:
+          yearlyNotificationsEnabled ?? this.yearlyNotificationsEnabled,
     );
   }
 }
