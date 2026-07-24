@@ -164,7 +164,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // إعادة جدولة الإشعارات عند تغيير المفضلات
-    await getIt<NotificationHelper>().rescheduleDailyFavoriteAzkar();
+    await sl<NotificationHelper>().rescheduleDailyFavoriteAzkar();
   }
 
   Future<void> _updateFavoriteTime(
@@ -180,7 +180,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     // إعادة جدولة الإشعارات لتشمل الوقت الجديد
-    await getIt<NotificationHelper>().rescheduleDailyFavoriteAzkar();
+    await sl<NotificationHelper>().rescheduleDailyFavoriteAzkar();
     
     // تحديث الواجهة إذا لزم الأمر (حالياً الواجهة تعتمد على favouriteTitlesIds فقط)
     add(HomeBookmarksChangedEvent());

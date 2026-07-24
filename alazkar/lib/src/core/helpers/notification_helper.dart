@@ -44,9 +44,9 @@ class NotificationHelper {
     // إلغاء الكل أولاً لتجنب التكرار أو بقاء إشعارات محذوفة
     await cancelAllNotifications();
 
-    final bookmarksHelper = getIt<BookmarksDBHelper>();
-    final azkarHelper = getIt<AzkarDBHelper>();
-    final settingsStorage = getIt<SettingsStorage>();
+    final bookmarksHelper = sl<BookmarksDBHelper>();
+    final azkarHelper = sl<AzkarDBHelper>();
+    final settingsStorage = sl<SettingsStorage>();
 
     // 1. جدولة الإشعار اليومي العام (إذا كان مفعلاً)
     if (settingsStorage.isNotificationsEnabled()) {
@@ -85,7 +85,7 @@ class NotificationHelper {
   }
 
   Future<void> _scheduleSingleZikr(int notificationId, int titleId, material.TimeOfDay time, String channelName) async {
-    final azkarHelper = getIt<AzkarDBHelper>();
+    final azkarHelper = sl<AzkarDBHelper>();
     final zikrTitle = await azkarHelper.getTitlesById(titleId);
     final zikrContent = await azkarHelper.getContentByTitleId(titleId);
     

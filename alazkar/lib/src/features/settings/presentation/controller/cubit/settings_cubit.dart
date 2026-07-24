@@ -50,15 +50,6 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   Future<void> _updateNotificationSchedule() async {
     final notificationHelper = sl<NotificationHelper>();
-    if (state.dailyNotificationsEnabled) {
-      await notificationHelper.scheduleDailyFavoriteAzkar(
-        time: material.TimeOfDay(
-          hour: state.dailyNotificationsHour,
-          minute: state.dailyNotificationsMinute,
-        ),
-      );
-    } else {
-      await notificationHelper.cancelAllNotifications();
-    }
+    await notificationHelper.rescheduleDailyFavoriteAzkar();
   }
 }
