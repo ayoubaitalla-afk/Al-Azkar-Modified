@@ -7,6 +7,13 @@ workflows:
       flutter: stable
       java: 17
     scripts:
+      - name: Generate temporary keystore
+        script: |
+          keytool -genkey -v -keystore upload-keystore.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=Manus, OU=Dev, O=Manus, L=SFO, S=CA, C=US"
+          echo "storePassword=password" > alazkar/android/key.properties
+          echo "keyPassword=password" >> alazkar/android/key.properties
+          echo "keyAlias=upload" >> alazkar/android/key.properties
+          echo "storeFile=../../upload-keystore.jks" >> alazkar/android/key.properties
       - name: Get Flutter packages
         script: |
           cd alazkar
