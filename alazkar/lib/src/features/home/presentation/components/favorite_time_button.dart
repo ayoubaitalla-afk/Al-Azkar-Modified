@@ -9,15 +9,18 @@ class FavoriteTimeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
+      buildWhen: (previous, current) {
+        if (current is! HomeLoadedState || previous is! HomeLoadedState) return true;
+        return previous.favouriteTitlesIds.contains(titleId) != current.favouriteTitlesIds.contains(titleId);
+      },
       builder: (context, state) {
         if (state is! HomeLoadedState) return const SizedBox();
         
-        // التحقق مما إذا كان الذكر في المفضلات
         final isBookmarked = state.favouriteTitlesIds.contains(titleId);
         if (!isBookmarked) return const SizedBox();
 
         return IconButton(
-          icon: const Icon(Icons.access_time, size: 20),
+          icon: const Icon(Icons.access_time_filled, size: 20),
           tooltip: "تحديد وقت التنبيه",
           onPressed: () async {
             final TimeOfDay? picked = await showTimePicker(
