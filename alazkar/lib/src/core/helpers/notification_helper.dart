@@ -49,12 +49,10 @@ class NotificationHelper {
     final settingsStorage = sl<SettingsStorage>();
 
     // 1. جدولة الإشعار اليومي العام (إذا كان مفعلاً)
-    if (settingsStorage.isNotificationsEnabled()) {
-      final timeStr = settingsStorage.getNotificationTime();
-      final parts = timeStr.split(':');
+    if (settingsStorage.dailyNotificationsEnabled) {
       final time = material.TimeOfDay(
-        hour: int.parse(parts[0]),
-        minute: int.parse(parts[1]),
+        hour: settingsStorage.dailyNotificationsHour,
+        minute: settingsStorage.dailyNotificationsMinute,
       );
 
       final favoriteIds = await bookmarksHelper.getAllFavoriteTitles();
