@@ -26,15 +26,24 @@ class FavoriteTimeButton extends StatelessWidget {
           icon: const Icon(Icons.access_time_filled, size: 20),
           tooltip: "تحديد أوقات التنبيهات",
           onPressed: () async {
-            final times = await sl<BookmarksDBHelper>().getNotificationTimes(titleId);
-            if (context.mounted) {
-              showDialog(
-                context: context,
-                builder: (context) => FavoriteTimesDialog(
-                  titleId: titleId,
-                  initialTimes: times,
-                ),
-              );
+            final TimeOfDay? picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+            );
+            if (picked != null && context.mounted) {
+              final timeStr = "${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}";
+              final currentTimes = await sl<BookmarksDBHelper>().getNotificationTimes(titleId);
+              if (!currentTimes.contains(timeStr)) {
+                final newTimes = [...currentTimes, timeStr]..sort();
+                if (context.mounted) {
+                  context.read<HomeBloc>().add(
+                    HomeUpdateFavoriteTimesEvent(
+                      titleId: titleId,
+                      times: newTimes,
+                    ),
+                  );
+                }
+              }
             }
           },
         );

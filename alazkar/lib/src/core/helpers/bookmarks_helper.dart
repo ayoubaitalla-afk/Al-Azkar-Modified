@@ -181,14 +181,15 @@ class BookmarksDBHelper {
     );
     if (result.isNotEmpty) {
       final String? timesJson = result.first['notification_times'] as String?;
-      if (timesJson != null && timesJson.isNotEmpty) {
-        // Simple manual parsing since it's a basic JSON array
+      if (timesJson != null && timesJson.isNotEmpty && timesJson != '""') {
+        // More robust manual parsing for JSON-like strings in SQLite
         return timesJson
             .replaceAll('[', '')
             .replaceAll(']', '')
             .replaceAll('"', '')
+            .replaceAll(' ', '')
             .split(',')
-            .where((s) => s.isNotEmpty)
+            .where((s) => s.contains(':')) // Ensure it's a valid time format HH:mm
             .toList();
       }
     }

@@ -111,74 +111,14 @@ class NotificationHelper {
       }
     }
 
-    // 3. جدولة الإشعارات التاريخية
-    await _scheduleHistoricalNotifications();
-  }
-
-  Future<void> _scheduleHistoricalNotifications() async {
-    final settingsStorage = sl<SettingsStorage>();
-    final azkarHelper = sl<AzkarDBHelper>();
-    final allTitles = await azkarHelper.getAllTitles();
-
-    // أسبوعي
-    if (settingsStorage.weeklyNotificationsEnabled) {
-      final weeklyTitles = allTitles.where((t) => t.freq.contains('w')).toList();
-      if (weeklyTitles.isNotEmpty) {
-        final randomZikr = weeklyTitles[Random().nextInt(weeklyTitles.length)];
-        await _schedulePeriodicZikr(200000, randomZikr.id, DateTimeComponents.dayOfWeekAndTime, "تذكير أسبوعي");
-      }
-    }
-
-    // شهري
-    if (settingsStorage.monthlyNotificationsEnabled) {
-      final monthlyTitles = allTitles.where((t) => t.freq.contains('m')).toList();
-      if (monthlyTitles.isNotEmpty) {
-        final randomZikr = monthlyTitles[Random().nextInt(monthlyTitles.length)];
-        await _schedulePeriodicZikr(300000, randomZikr.id, DateTimeComponents.dayOfMonthAndTime, "تذكير شهري");
-      }
-    }
-
-    // سنوي
-    if (settingsStorage.yearlyNotificationsEnabled) {
-      final yearlyTitles = allTitles.where((t) => t.freq.contains('y')).toList();
-      if (yearlyTitles.isNotEmpty) {
-        final randomZikr = yearlyTitles[Random().nextInt(yearlyTitles.length)];
-        await _schedulePeriodicZikr(400000, randomZikr.id, DateTimeComponents.dateAndTime, "تذكير سنوي");
-      }
-    }
-  }
-
-  Future<void> _schedulePeriodicZikr(int notificationId, int titleId, DateTimeComponents match, String channelName) async {
-    final azkarHelper = sl<AzkarDBHelper>();
-    final zikrTitle = await azkarHelper.getTitlesById(titleId);
-    
-    // وقت افتراضي للإشعارات الدورية (مثلاً 10 صباحاً)
-    final time = material.TimeOfDay(hour: 10, minute: 0);
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      notificationId,
-      zikrTitle.name,
-      "لا تنسَ قراءة ${zikrTitle.name} (تذكير دوري)",
-      _nextInstance(time),
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          'periodic_azkar_channel_$notificationId',
-          channelName,
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
-        iOS: const DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: match,
-    );
   }
 
   // دالة لفتح إعدادات تحسين البطارية لشاومي
   Future<void> openBatteryOptimizationSettings() async {
     if (Platform.isAndroid) {
-      await Permission.ignoreBatteryOptimizations.request();
+      if (await Permission.ignoreBatteryOptimizations.isDenied) {
+        await Permission.ignoreBatteryOptimizations.request();
+      }
     }
   }
 
@@ -203,11 +143,24 @@ class NotificationHelper {
       _nextInstance(time),
       NotificationDetails(
         android: AndroidNotificationDetails(
-          'daily_azkar_channel_$notificationId',
+          'azkar_v3_daily_$notificationId',
           channelName,
           channelDescription: 'تذكير مخصص بقراءة الأذكار',
           importance: Importance.max,
-          priority: Priority.high,
+          priority: Priority.max,
+          fullScreenIntent: true,
+          category: AndroidNotificationCategory.alarm,
+          visibility: NotificationVisibility.public,
+          showWhen: true,
+          ongoing: false,
+          autoCancel: true,
+          ticker: 'تذكير بذكر الله',
+          playSound: true,
+          enableVibration: true,
+          enableLights: true,
+          ledColor: const material.Color.fromARGB(255, 255, 0, 0),
+          ledOnMs: 1000,
+          ledOffMs: 500,
         ),
         iOS: const DarwinNotificationDetails(),
       ),

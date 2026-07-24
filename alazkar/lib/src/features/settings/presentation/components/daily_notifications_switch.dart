@@ -27,31 +27,6 @@ class DailyNotificationsSwitch extends StatelessWidget {
                 }
               },
             ),
-            if (state.dailyNotificationsEnabled)
-              ListTile(
-                leading: const Icon(Icons.access_time),
-                title: const Text("وقت التنبيه"),
-                trailing: Text(
-                  "${state.dailyNotificationsHour.toString().padLeft(2, '0')}:${state.dailyNotificationsMinute.toString().padLeft(2, '0')}",
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                onTap: () async {
-                  final TimeOfDay? picked = await showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay(
-                      hour: state.dailyNotificationsHour,
-                      minute: state.dailyNotificationsMinute,
-                    ),
-                  );
-                  if (picked != null) {
-                    if (context.mounted) {
-                      context
-                          .read<SettingsCubit>()
-                          .setDailyNotificationsTime(picked.hour, picked.minute);
-                    }
-                  }
-                },
-              ),
           ],
         );
       },

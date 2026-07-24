@@ -33,7 +33,14 @@ class BookmarkTitleButton extends StatelessWidget {
         } else {
           return IconButton(
             onPressed: () {
+              // إضافة للمفضلة + جدولة إشعار تلقائي (مثلاً الساعة 8 صباحاً) بضغطة واحدة
               context.read<HomeBloc>().add(HomeBookmarkTitleEvent(titleId));
+              context.read<HomeBloc>().add(
+                HomeUpdateFavoriteTimesEvent(
+                  titleId: titleId,
+                  times: ["08:00"], // وقت افتراضي لضمان عمل الإشعار فوراً
+                ),
+              );
             },
             icon: const Icon(
               Icons.bookmark_add_outlined,

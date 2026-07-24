@@ -47,6 +47,9 @@ Future initServices() async {
 
   await initDBs();
 
+  // Re-schedule notifications on startup to ensure they are active on Xiaomi/HyperOS
+  await sl<NotificationHelper>().rescheduleDailyFavoriteAzkar();
+
   initWindowsManager();
 
   // if(kDebugMode) await viewStatistics();
